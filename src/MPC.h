@@ -4,17 +4,36 @@
 #include <cppad/cppad.hpp>
 #include <cppad/ipopt/solve.hpp>
 
-using CppAD::AD;
+
 
 #include <vector>
 #include "Eigen-3.3/Eigen/Core"
 
 using namespace std;
 
-const int N = 10; // how many states we "lookahead" in the future
-const double dt = 0.1; // how much time we expect environment changes
+const int N = 12; // how many states we "lookahead" in the future
+const double dt = 0.05; // how much time we expect environment changes
 
-typedef CPPAD_TESTVECTOR(double) ADvector;
+// It was obtained by measuring the radius formed by running the vehicle in the
+// simulator around in a circle with a constant steering angle and velocity on a
+// flat terrain.
+// Lf was tuned until the the radius formed by the simulating the model
+// presented in the classroom matched the previous radius.
+// This is the length from front to CoG that has a similar radius.
+const double Lf = 2.67;
+
+//typedef CPPAD_TESTVECTOR(double) ADvector;
+
+struct Solution {
+		vector<double> X;
+		vector<double> Y;
+		vector<double> Psi;
+		vector<double> V;
+		vector<double> Cte;
+		vector<double> EPsi;
+		vector<double> Delta;
+		vector<double> A;
+};
 
 class MPC {
  public:
@@ -22,22 +41,11 @@ class MPC {
 
   virtual ~MPC();
   
-  double steer;
-  double throttle;
+  Solution Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs);
   
-  ADvector x; // where all the state and actuation variables will be stored
-  ADvector x_lowerbound; //lower limit for each corresponding variable in x
-  ADvector x_upperbound; //upper limit for each corresponding variable in x
-  ADvector g_lowerbound; // value constraint for each corresponding constraint expression
-  ADvector g_upperbound; // value constraint for each corresponding constraint expression
-
-  std::vector<double> future_xs;
-  std::vector<double> future_ys;
-
-
-  // Solve the model given an initial state and polynomial coefficients.
-  // Return the first actuatotions.
-  vector<double> Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs);
+  double delta_prev {0};
+  double a_prev {0.1};
+  
 };
 
 #endif /* MPC_H */
