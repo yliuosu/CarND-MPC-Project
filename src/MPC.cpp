@@ -18,6 +18,14 @@ size_t epsi_start = cte_start + N;
 size_t delta_start = epsi_start + N;
 size_t a_start = delta_start + N - 1;
 
+// weights for cost computations
+double w_cte = 1.0;
+double w_epsi = 1.0;
+double w_a = 25.0;   //20
+double w_delta = 1.0;
+double w_ddelta = 1200.0; // weight cost for high difference between consecutive steering actuations 1000
+double w_da = 1000.0;  //900
+
 
 class FG_eval {
  public:
